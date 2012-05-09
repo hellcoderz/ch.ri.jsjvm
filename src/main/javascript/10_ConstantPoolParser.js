@@ -15,12 +15,12 @@ var ConstantPoolParser = function(classReader)
 	/**
 	 * Constants array
 	 */
-	var constants = new Array();
+	this.constants = new Array();
+	this.classConstants = new Array();
 	
-	while (constants.length < constant_pool_size-1)
+	while (this.constants.length < constant_pool_size-1)
 	{
 		var tag = classReader.getU1(pos++);
-		//Logger.debug("Tag: " + tag);
 
 		
 		if (tag == 1)
@@ -36,17 +36,15 @@ var ConstantPoolParser = function(classReader)
 			
 			pos += 2;
 			
-			Logger.debug("String constant: " + strlen);
-			
 			var str = "";
 			for (var i=0; i<strlen; i++)
 			{
 				str += String.fromCharCode(classReader.getU1(pos + i));
 			}
 			
-			Logger.debug("	String: " + str);
+			Logger.debug("String constant: " + str);
 			
-			constants.push(0); //TODO
+			this.constants.push(str);
 			pos += strlen;
 		}
 		else if (tag == 3)
@@ -54,7 +52,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Integer: a signed 32-bit two's complement number in big-endian format
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 4)
@@ -62,7 +60,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Float: a 32-bit single-precision IEEE 754 floating-point number
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 5)
@@ -70,7 +68,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 8 bytes Long: a signed 64-bit two's complement number in big-endian format (takes two slots in the constant pool table)
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 8;
 		}
 		else if (tag == 6)
@@ -78,7 +76,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 8 bytes Double: a 64-bit double-precision IEEE 754 floating-point number (takes two slots in the constant pool table)
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 8;
 		}
 		else if (tag == 7)
@@ -88,7 +86,8 @@ var ConstantPoolParser = function(classReader)
 			 */
 			var ref = classReader.getU2(pos);
 			Logger.debug("Class reference: " + ref);
-			constants.push(0); //TODO
+			this.classConstants.push(ref);
+			this.constants.push(0);
 			pos += 2;
 		}
 		else if (tag == 8)
@@ -96,7 +95,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 2 bytes String reference: an index within the constant pool to a UTF-8 string
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 2;
 		}
 		else if (tag == 9)
@@ -104,7 +103,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Field reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 10)
@@ -112,7 +111,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 11)
@@ -120,7 +119,7 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Interface method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 12)
@@ -129,14 +128,23 @@ var ConstantPoolParser = function(classReader)
 			 * 4 bytes Name and type descriptor: two indexes to UTF-8 strings within the constant pool, the first representing a name (identifier) 
 			 * and the second a specially encoded type descriptor.
 			 */
-			constants.push(0); //TODO
+			this.constants.push(0); //TODO
 			pos += 4;
 		}
 		
 		
 	}
 	
-	//Logger.debug("Poolsize: " + constants.length);
+	/**
+	 * Resolve class references
+	 */
+	for (var i=0; i<this.classConstants.length; i++)
+	{
+		var ref = this.classConstants[i];
+		var resolved = this.constants[ref-1];
+		this.classConstants[i] = resolved;
+		Logger.debug("Resolved ref: " + ref + " = " + resolved);
+	}
 
 }
 
