@@ -20,6 +20,7 @@ var ClassLoader = {
 	load : function(className, callback)
 	{
 		Logger.debug("Loading: " + className + " from " + ClassLoader.url);
+		callback(); //TODO
 	}
 
 };
