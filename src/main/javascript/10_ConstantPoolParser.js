@@ -15,13 +15,19 @@ var ConstantPoolParser = function(classReader)
 	 * Constants array
 	 */
 	this.constants = new Array();
-	this.classConstants = new Array();
+	
+	this.classReferences = new Array();
+	var unresolvedClassReferences = new Array();
+	
+	this.methodReferences = new Array();
+	var unresolvedMethodReferences = new Array();
 	
 	while (this.constants.length < constant_pool_size-1)
 	{
 		var tag = classReader.getU1(pos++);
-
-		Logger.debug("Tag: " + tag);
+		var constantNum = this.constants.length;
+		
+		Logger.debug("Tag: " + tag + "@" + constantNum);
 		
 		if (tag == 1)
 		{
@@ -86,8 +92,8 @@ var ConstantPoolParser = function(classReader)
 			 */
 			var ref = classReader.getU2(pos);
 			Logger.debug("Class reference: " + ref);
-			this.classConstants.push(ref);
-			this.constants.push(0);
+			unresolvedClassReferences.push(constantNum);
+			this.constants.push(ref);
 			pos += 2;
 		}
 		else if (tag == 8)
@@ -111,8 +117,17 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 4 bytes Method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
-			this.constants.push(0); //TODO
-			pos += 4;
+			var classRef = classReader.getU2(pos);
+			pos += 2;
+			var descriptor = classReader.getU2(pos);
+			
+			var entry = {};
+			entry.classRef = classRef;
+			entry.descriptor = descriptor;
+			
+			unresolvedMethodReferences.push(constantNum);
+			this.constants.push(entry);
+			pos += 2;
 		}
 		else if (tag == 11)
 		{
@@ -138,12 +153,31 @@ var ConstantPoolParser = function(classReader)
 	/**
 	 * Resolve class references
 	 */
-	for (var i=0; i<this.classConstants.length; i++)
+	for (var i=0; i<unresolvedClassReferences.length; i++)
 	{
-		var ref = this.classConstants[i];
+		var constantRef = unresolvedClassReferences[i];
+		var ref = this.constants[constantRef]
 		var resolved = this.constants[ref-1];
-		this.classConstants[i] = resolved;
-		Logger.debug("Resolved ref: " + ref + " = " + resolved);
+		
+		this.classReferences[constantRef] = resolved;
+		
+		Logger.debug("Resolved class ref: " + constantRef + " = " + resolved);
+	}
+	
+	/**
+	 * Resolve method references
+	 */
+	for (var i=0; i<unresolvedMethodReferences.length; i++)
+	{
+		var constantRef = unresolvedMethodReferences[i];
+		var entry = this.constants[constantRef];
+		
+		entry.classRef = this.constants[entry.classRef];
+		entry.descriptor = this.constants[entry.descriptor];
+		
+		this.methodReferences[constantRef] = entry;
+		
+		Logger.debug("Resolved method ref: " + constantRef + " = " + entry.classRef + " - " + entry.descriptor);
 	}
 
 }
