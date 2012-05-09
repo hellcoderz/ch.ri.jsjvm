@@ -1,76 +1,63 @@
 package ch.ri.jsjvm.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.util.Enumeration;
+import java.io.InputStream;
+import java.io.PrintStream;
+
 
 public class ClassToJson
 {
 	
 	public static void main(String[] args) throws Exception
 	{
-		
-		ClassConverterLoader loader = new ClassConverterLoader();
-		Class<?> class1 = loader.loadClass( TestClass.class.getName() );
-		Method method = class1.getMethod("main", String[].class);
-		method.invoke(null, new Object[]{null});
+		convert( TestClass.class.getName() );
 	}
 	
+	private static final String outputDir = "test/classes/";
 	
-	public static class ClassConverterLoader extends ClassLoader
+	private static void convert(String className) throws IOException
 	{
-
-
-		@Override
-		public Enumeration<URL> getResources(String name) throws IOException
+		File outputFile = new File(outputDir + className + ".json");
+		
+		if (outputFile.exists())
+			outputFile.delete();
+			
+		PrintStream printer = new PrintStream(outputFile);
+		printer.print("{\"name\":\"" + className + "\",\"bytes\":[");
+		
+		InputStream stream = ClassToJson.class.getResourceAsStream( "/" + className.replace(".", "/") + ".class" );
+		
+		ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+		
+		byte[] buffer = new byte[4096];
+		int offset = 0;
+		
+		while(true)
 		{
-			System.out.println("getResources: " + name);
-			return super.getResources(name);
+			int count = stream.read(buffer);
+			
+			if (count <= 0)
+				break;
+			
+			output.write(buffer, offset, count);
+			offset += count;
 		}
-
-		@Override
-		public Class<?> findClass(String name) throws ClassNotFoundException
+		
+		byte[] bytes = output.toByteArray();
+		for (int i=0; i<bytes.length; i++)
 		{
-			System.out.println("findClass: " + name);
-			return super.findClass(name);
+			printer.print( bytes[i] & 0xFF );
+			
+			if (i<bytes.length-1)
+				printer.print(",");
 		}
-
-		@Override
-		public Class<?> loadClass(String name) throws ClassNotFoundException
-		{
-			System.out.println("loadClass: " + name);
-			return super.loadClass(name);
-		}
-
-		@Override
-		protected URL findResource(String name)
-		{
-			System.out.println("findResource: " + name);
-			return super.findResource(name);
-		}
-
-		@Override
-		protected String findLibrary(String libname)
-		{
-			System.out.println("findLibrary: " + libname);
-			return super.findLibrary(libname);
-		}
-
-		@Override
-		protected Class<?> loadClass(String name, boolean resolve)
-				throws ClassNotFoundException
-		{
-			System.out.println("loadClass: " + name + "," + resolve);
-			return super.loadClass(name, resolve);
-		}
-
-		@Override
-		public URL getResource(String name)
-		{
-			System.out.println("getResource" + name);
-			return super.getResource(name);
-		}
+		
+		printer.print("]}");
+		
+		printer.flush();
+		printer.close();
 		
 	}
 
