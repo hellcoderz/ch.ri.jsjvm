@@ -9,9 +9,8 @@ var ConstantPoolParser = function(classReader)
 	 */
 	var constant_pool_size = classReader.getU2(8);
 	
-	//Logger.debug("Constant pool size: " + constant_pool_size);
-	
 	var pos = 10;
+
 	/**
 	 * Constants array
 	 */
@@ -22,6 +21,7 @@ var ConstantPoolParser = function(classReader)
 	{
 		var tag = classReader.getU1(pos++);
 
+		Logger.debug("Tag: " + tag);
 		
 		if (tag == 1)
 		{
