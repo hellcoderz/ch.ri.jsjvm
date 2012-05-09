@@ -9,6 +9,8 @@ jsjvm.prototype.init = function(classLoadingUrl)
 {
 	this.loader = new ClassLoader(classLoadingUrl);
 	this.vm = new VM(this.loader);
+	
+	Logger.debug("Created new VM: " + classLoadingUrl);
 }
 
 /**
@@ -17,6 +19,8 @@ jsjvm.prototype.init = function(classLoadingUrl)
 jsjvm.prototype.start = function(mainClass, args)
 {
 	var self = this;
+	
+	Logger.debug("Starting vm: " + mainClass + ".main(" + args + ")");
 
 	this.loader.load(mainClass, function()
 	{
