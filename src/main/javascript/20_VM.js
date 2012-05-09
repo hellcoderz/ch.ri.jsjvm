@@ -3,7 +3,9 @@
  */
 
 
-var VM = {
+var VM = function(classLoader)
+{
+	this.classLoader = classLoader;
 
 	/**
 	 * Invokes a static method

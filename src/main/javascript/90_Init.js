@@ -4,7 +4,14 @@
 
 jsjvm.prototype.init = function(mainClass, args, classLoadingUrl)
 {
-	ClassLoader.url = classLoadingUrl;
-	ClassLoader.load(mainClass, function(){ VM.invokeStatic(mainClass, "main", args); });
+	var self = this;
+
+	this.loader = new ClassLoader(classLoadingUrl);
+	this.vm = new VM(this.loader);
+	
+	loader.load(mainClass, function()
+	{
+		self.vm.invokeStatic(mainClass, "main", args);
+	});
 }
 

@@ -2,25 +2,32 @@
  * @classloader
  */
 
-var ClassLoader = {
+var ClassLoader = function(url)
+{
 
 	/**
-	 * Array of classes [ {name: "java.lang.String", bytes: [0,1,2,3]}, {...} ]
+	 * Array of classes ( classes["x.y.z"] = [1,2,3] )
 	 */
-	classes : new Array(),
+	this.classes = new Array();
 	
 	/**
 	 * Url to load classes from
 	 */
-	url : "/classloaderUrlNotDefined",
+	this.url = url;
 
 	/**
 	 * Load class as json representation via jquery
 	 */
-	load : function(className, callback)
+	this.load = function(className, callback)
 	{
-		Logger.debug("Loading: " + className + " from " + ClassLoader.url);
+		Logger.debug("Loading class: " + className + " from " + this.url);
 		callback(); //TODO
+	}
+	
+	this.save = function(className, bytes)
+	{
+		Logger.debug("Saving class: " + className + " size: " + bytes.length);
+		this.classes[className] = bytes;
 	}
 
 };
