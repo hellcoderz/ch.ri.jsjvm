@@ -1,0 +1,40 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ch.ri.jsjvm</groupId>
+	<artifactId>JsJVM</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>Javascript Java VM</name>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<type>jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.16</version>
+		</dependency>
+	</dependencies>
+	<repositories>
+		<repository>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+				<checksumPolicy>fail</checksumPolicy>
+			</releases>
+			<id>Rudin-Informatik</id>
+			<name>Thomas Rudin</name>
+			<url>http://rudin-informatik.ch/maven2</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
+	<parent>
+		<groupId>ch.ri.pom</groupId>
+		<artifactId>parentpom</artifactId>
+		<version>1.0</version>
+	</parent>
+</project>
