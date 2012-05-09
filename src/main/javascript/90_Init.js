@@ -2,7 +2,9 @@
  * @init
  */
 
-jsjvm.prototype.init = function(mainClass)
+jsjvm.prototype.init = function(mainClass, classLoadingUrl)
 {
-	alert(mainClass);
+	ClassLoader.url = classLoadingUrl;
+	ClassLoader.load(mainClass, function(){});
 }
+

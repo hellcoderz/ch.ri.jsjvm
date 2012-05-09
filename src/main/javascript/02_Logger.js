@@ -5,11 +5,11 @@
 var Logger = {
 	
 	/**
-	 * Log a message
+	 * Log a debug message
 	 */
-	log : function(msg)
+	debug : function(msg)
 	{
-		alert(msg); //TODO
+		document.write("Debug: " + msg);
 	}
 
 };
