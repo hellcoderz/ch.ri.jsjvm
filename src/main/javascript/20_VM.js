@@ -10,7 +10,7 @@ var VM = function(classLoader)
 	/**
 	 * Invokes a static method
 	 */
-	invokeStatic : function(className, method, args)
+	this.invokeStatic = function(className, method, args)
 	{
 		Logger.debug("invokeStatic: " + className + "." + method + "("+args+")");
 	}
