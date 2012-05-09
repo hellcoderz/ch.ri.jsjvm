@@ -53,9 +53,12 @@ var ClassReader = function(name, bytes)
 	Logger.debug("Constant pool size: " + constant_pool_size);
 	
 	var pos = 10;
-	var cp_count = 0;
+	/**
+	 * Constants array
+	 */
+	var constants = new Array();
 	
-	while (cp_count < constant_pool_size-1)
+	while (constants.length < constant_pool_size-1)
 	{
 		var tag = this.getU1(pos++);
 		Logger.debug("Tag: " + tag);
@@ -72,15 +75,27 @@ var ClassReader = function(name, bytes)
 			 */
 			var strlen = this.getU2(pos);
 			
+			pos += 2;
+			
 			Logger.debug("String constant: " + strlen);
 			
-			pos += strlen + 2;
+			var str = "";
+			for (var i=0; i<strlen; i++)
+			{
+				str += String.fromCharCode(this.getU1(pos + i));
+			}
+			
+			Logger.debug("	String: " + str);
+			
+			constants.push(0); //TODO
+			pos += strlen;
 		}
 		else if (tag == 3)
 		{
 			/*
 			 * 4 bytes Integer: a signed 32-bit two's complement number in big-endian format
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 4)
@@ -88,6 +103,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 4 bytes Float: a 32-bit single-precision IEEE 754 floating-point number
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 5)
@@ -95,6 +111,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 8 bytes Long: a signed 64-bit two's complement number in big-endian format (takes two slots in the constant pool table)
 			 */
+			constants.push(0); //TODO
 			pos += 8;
 		}
 		else if (tag == 6)
@@ -102,6 +119,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 8 bytes Double: a 64-bit double-precision IEEE 754 floating-point number (takes two slots in the constant pool table)
 			 */
+			constants.push(0); //TODO
 			pos += 8;
 		}
 		else if (tag == 7)
@@ -111,6 +129,7 @@ var ClassReader = function(name, bytes)
 			 */
 			var ref = this.getU2(pos);
 			Logger.debug("Class reference: " + ref);
+			constants.push(0); //TODO
 			pos += 2;
 		}
 		else if (tag == 8)
@@ -118,6 +137,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 2 bytes String reference: an index within the constant pool to a UTF-8 string
 			 */
+			constants.push(0); //TODO
 			pos += 2;
 		}
 		else if (tag == 9)
@@ -125,6 +145,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 4 bytes Field reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 10)
@@ -132,6 +153,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 4 bytes Method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 11)
@@ -139,6 +161,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 4 bytes Interface method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		else if (tag == 12)
@@ -147,12 +170,14 @@ var ClassReader = function(name, bytes)
 			 * 4 bytes Name and type descriptor: two indexes to UTF-8 strings within the constant pool, the first representing a name (identifier) 
 			 * and the second a specially encoded type descriptor.
 			 */
+			constants.push(0); //TODO
 			pos += 4;
 		}
 		
-		cp_count++;
 		
 	}
+	
+	Logger.debug("Poolsize: " + constants.length);
 	
 	
 }
