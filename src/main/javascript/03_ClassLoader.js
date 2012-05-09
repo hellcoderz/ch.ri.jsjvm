@@ -4,6 +4,7 @@
 
 var ClassLoader = function(url)
 {
+	var self = this;
 
 	/**
 	 * Array of classes ( classes["x.y.z"] = [1,2,3] )
@@ -20,8 +21,30 @@ var ClassLoader = function(url)
 	 */
 	this.load = function(className, callback)
 	{
-		Logger.debug("Loading class: " + className + " from " + this.url);
-		callback(); //TODO
+		var classUrl = this.url + className;
+			
+		var bytes = this.classes[className];
+		
+		if (bytes != undefined)
+		{
+			Logger.debug("Cached class: " + className);
+			if (typeof(callback) == "function")
+				callback(bytes);
+		}
+		else
+		{
+			Logger.debug("Loading from remote: " + classUrl);
+		
+			$.getJSON(classUrl, function(data)
+			{
+				Logger.debug("Loaded: " + className);
+				//Returns: { name: "", bytes: []}
+				self.classes[data.name] = data.bytes;
+				
+				if (typeof(callback) == "function")
+					callback(data.bytes);
+			});
+		}
 	}
 	
 	this.save = function(className, bytes)
