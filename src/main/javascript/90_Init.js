@@ -22,9 +22,11 @@ jsjvm.prototype.start = function(mainClass, args)
 	
 	Logger.debug("Starting vm: " + mainClass + ".main(" + args + ")");
 
-	this.loader.load(mainClass, function()
+	this.loader.load(mainClass, function(bytes)
 	{
-		self.vm.invokeStatic(mainClass, "main", args);
+		var reader = new ClassReader(mainClass, bytes);
+		
+		//self.vm.invokeStatic(mainClass, "main", args);
 	});
 }
 

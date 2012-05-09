@@ -13,6 +13,7 @@ var VM = function(classLoader)
 	this.invokeStatic = function(className, method, args)
 	{
 		Logger.debug("invokeStatic: " + className + "." + method + "("+args+")");
+		
 	}
 
 };
