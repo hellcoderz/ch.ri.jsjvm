@@ -1,56 +1,15 @@
 /*
- * @classreader
+ * @constantpool
  */
 
-var ClassReader = function(name, bytes)
+var ConstantPoolParser = function(classReader)
 {
-	Logger.debug("Reading: " + name + " with length: " + bytes.length);
-	
-	var self = this;
-	this.bytes = bytes;
-	
-	/**
-	 * Returns a 16 bit value
-	 */
-	this.getU2 = function(pos)
-	{
-		return self.bytes[pos+1] + (self.bytes[pos] * 256);
-	}
-	
-	/**
-	 * Returns a 8 bit value
-	 */
-	this.getU1 = function(pos)
-	{
-		return self.bytes[pos];
-	}
-	
-	/**
-	 * Check signature
-	 */
-	if (bytes[0] != 0xCA)
-		throw Error("Error at offset 0")
-	if (bytes[1] != 0xFE)
-		throw Error("Error at offset 1")
-	if (bytes[2] != 0xBA)
-		throw Error("Error at offset 2")
-	if (bytes[3] != 0xBE)
-		throw Error("Error at offset 3")
-	
-	/**
-	 * Extract version
-	 */
-	var version_minor = this.getU2(4);
-	var version_major = this.getU2(6);
-	
-	Logger.debug("Classfile version: " + version_major + ":" + version_minor);
-	
 	/**
 	 * Extract constant pool
 	 */
-	var constant_pool_size = this.getU2(8);
+	var constant_pool_size = classReader.getU2(8);
 	
-	Logger.debug("Constant pool size: " + constant_pool_size);
+	//Logger.debug("Constant pool size: " + constant_pool_size);
 	
 	var pos = 10;
 	/**
@@ -60,8 +19,8 @@ var ClassReader = function(name, bytes)
 	
 	while (constants.length < constant_pool_size-1)
 	{
-		var tag = this.getU1(pos++);
-		Logger.debug("Tag: " + tag);
+		var tag = classReader.getU1(pos++);
+		//Logger.debug("Tag: " + tag);
 
 		
 		if (tag == 1)
@@ -73,7 +32,7 @@ var ClassReader = function(name, bytes)
 			 * encoded string which immediately follows (which may be different than the number of characters). Note that the encoding
 			 * used is not actually UTF-8, but involves a slight modification of the Unicode standard encoding form.
 			 */
-			var strlen = this.getU2(pos);
+			var strlen = classReader.getU2(pos);
 			
 			pos += 2;
 			
@@ -82,7 +41,7 @@ var ClassReader = function(name, bytes)
 			var str = "";
 			for (var i=0; i<strlen; i++)
 			{
-				str += String.fromCharCode(this.getU1(pos + i));
+				str += String.fromCharCode(classReader.getU1(pos + i));
 			}
 			
 			Logger.debug("	String: " + str);
@@ -127,7 +86,7 @@ var ClassReader = function(name, bytes)
 			/*
 			 * 2 bytes Class reference: an index within the constant pool to a UTF-8 string containing the fully qualified class name (in internal format)
 			 */
-			var ref = this.getU2(pos);
+			var ref = classReader.getU2(pos);
 			Logger.debug("Class reference: " + ref);
 			constants.push(0); //TODO
 			pos += 2;
@@ -177,8 +136,7 @@ var ClassReader = function(name, bytes)
 		
 	}
 	
-	Logger.debug("Poolsize: " + constants.length);
-	
-	
+	//Logger.debug("Poolsize: " + constants.length);
+
 }
 
