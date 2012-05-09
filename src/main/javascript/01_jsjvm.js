@@ -5,5 +5,5 @@
  */
 
 
-var jsjvm = function(mainClass, url) { this.init(mainClass, url); };
+var jsjvm = function(mainClass, args, url) { this.init(mainClass, args, url); };
 
