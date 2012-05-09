@@ -6,11 +6,8 @@
 	<script type="text/javascript" src="../target/jsjvm.js"></script>
 	<script type="text/javascript">
 	
-	var vm = new jsjvm("classes/");
-	
-	vm.loader.save("ch.ri.jsjvm.JSMain", [1,2,3,4]);
-	
-	vm.start("ch.ri.jsjvm.JSMain", []);
+	var vm = new jsjvm( function(name){ return "classes/" + name + ".json"; } );
+	vm.start("ch.ri.jsjvm.utils.TestClass", []);
 	
 	</script>
 </head>

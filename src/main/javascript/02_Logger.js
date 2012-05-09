@@ -9,7 +9,8 @@ var Logger = {
 	 */
 	debug : function(msg)
 	{
-		document.write("Debug: " + msg + "<br>");
+		console.log("Debug: " + msg);
+		//document.write("Debug: " + msg + "<br>");
 	}
 
 };

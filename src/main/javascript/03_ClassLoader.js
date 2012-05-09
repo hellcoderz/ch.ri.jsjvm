@@ -12,7 +12,7 @@ var ClassLoader = function(url)
 	this.classes = new Array();
 	
 	/**
-	 * Url to load classes from
+	 * Url/function to load classes from
 	 */
 	this.url = url;
 
@@ -21,7 +21,12 @@ var ClassLoader = function(url)
 	 */
 	this.load = function(className, callback)
 	{
-		var classUrl = this.url + className;
+		var classUrl;
+		
+		if (typeof(this.url) == "function")
+			classUrl = this.url(className);
+		else
+			classUrl = this.url + className;
 			
 		var bytes = this.classes[className];
 		
@@ -34,10 +39,10 @@ var ClassLoader = function(url)
 		else
 		{
 			Logger.debug("Loading from remote: " + classUrl);
-		
+
 			$.getJSON(classUrl, function(data)
 			{
-				Logger.debug("Loaded: " + className);
+				Logger.debug("Loaded: " + className + " size: " + data.bytes.length);
 				//Returns: { name: "", bytes: []}
 				self.classes[data.name] = data.bytes;
 				
