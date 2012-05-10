@@ -10,9 +10,20 @@ import java.io.PrintStream;
 public class ClassToJson
 {
 	
+	/**
+	 * List of classes to convert
+	 */
+	private static final Class<?>[] classList =
+		{
+		TestClass.class,
+		Object.class,
+		String.class
+		};
+	
 	public static void main(String[] args) throws Exception
 	{
-		convert( TestClass.class.getName() );
+		for (Class<?> c: classList)
+			convert( c.getName() );
 	}
 	
 	private static final String outputDir = "test/classes/";
@@ -32,7 +43,6 @@ public class ClassToJson
 		ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
 		
 		byte[] buffer = new byte[4096];
-		int offset = 0;
 		
 		while(true)
 		{
@@ -41,8 +51,7 @@ public class ClassToJson
 			if (count <= 0)
 				break;
 			
-			output.write(buffer, offset, count);
-			offset += count;
+			output.write(buffer, 0, count);
 		}
 		
 		byte[] bytes = output.toByteArray();
