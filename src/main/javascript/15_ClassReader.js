@@ -81,6 +81,26 @@ var ClassReader = function(name, bytes)
 	
 	pos += 2
 	
+	/**
+	 * Interfaces
+	 */
+	
+	var interfaces = new ClassInterfaceParser(cpoolParser, this, pos);
+	pos += interfaces.size;
+	
+	/**
+	 * Fields
+	 */
+	
+	var fields = new ClassFieldParser(cpoolParser, this, pos);
+	pos += fields.size;
+	
+	/**
+	 * Methods
+	 */
+	
+	var methods = new ClassMethodParser(cpoolParser, this, pos);
+	pos += methods.size;
 	
 }
 
