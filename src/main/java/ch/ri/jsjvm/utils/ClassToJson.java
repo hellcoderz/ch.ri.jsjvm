@@ -1,10 +1,14 @@
 package ch.ri.jsjvm.utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintStream;
+
+import org.objectweb.asm.ClassReader;
+
+import ch.ri.jsjvm.utils.asm.AsmClassVisitor;
+import ch.ri.jsjvm.utils.asm.code.ByteCode;
+import ch.ri.jsjvm.utils.asm.code.MethodCode;
 
 
 public class ClassToJson
@@ -36,34 +40,36 @@ public class ClassToJson
 			outputFile.delete();
 			
 		PrintStream printer = new PrintStream(outputFile);
-		printer.print("{\"name\":\"" + className + "\",\"bytes\":[");
+
+		ClassReader cReader = new ClassReader(className);
 		
-		InputStream stream = ClassToJson.class.getResourceAsStream( "/" + className.replace(".", "/") + ".class" );
+		AsmClassVisitor asm = new AsmClassVisitor();
+		cReader.accept(asm, 0);
 		
-		ByteArrayOutputStream output = new ByteArrayOutputStream(4096);
+		printer.print("{\"name\":\""+className+"\",");
 		
-		byte[] buffer = new byte[4096];
 		
-		while(true)
+		printer.print("\"methods\":[");
+
+		ByteCode code = asm.getCode();
+		for (MethodCode method: code.methods)
 		{
-			int count = stream.read(buffer);
 			
-			if (count <= 0)
-				break;
+			printer.print("\"name\":\"");
+			printer.print(method.name);
+			printer.print("\",");
+		
+			//TODO
+
 			
-			output.write(buffer, 0, count);
 		}
 		
-		byte[] bytes = output.toByteArray();
-		for (int i=0; i<bytes.length; i++)
-		{
-			printer.print( bytes[i] & 0xFF );
-			
-			if (i<bytes.length-1)
-				printer.print(",");
-		}
 		
-		printer.print("]}");
+		
+		
+		printer.print("]");
+		
+		printer.print("}");
 		
 		printer.flush();
 		printer.close();
