@@ -41,6 +41,14 @@ public class ClassToJson
 			
 		PrintStream printer = new PrintStream(outputFile);
 
+		printClass(className, printer);
+		
+		printer.flush();
+		printer.close();
+	}
+	
+	private static void printClass(String className, PrintStream printer) throws IOException
+	{
 		ClassReader cReader = new ClassReader(className);
 		
 		AsmClassVisitor asm = new AsmClassVisitor();
@@ -60,8 +68,6 @@ public class ClassToJson
 			printer.print("\",");
 		
 			//TODO
-
-			
 		}
 		
 		
@@ -70,9 +76,6 @@ public class ClassToJson
 		printer.print("]");
 		
 		printer.print("}");
-		
-		printer.flush();
-		printer.close();
 		
 	}
 
