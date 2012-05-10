@@ -16,18 +16,29 @@ var ConstantPoolParser = function(classReader)
 	 */
 	this.constants = new Array();
 	
+	/**
+	 * Classes
+	 */
 	this.classes = new Array();
-	var unresolvedclasses = new Array();
+	var unresolvedClasses = new Array();
 	
+	/**
+	 * Methods
+	 */
 	this.methods = new Array();
-	var unresolvedmethods = new Array();
+	var unresolvedMethods = new Array();
+	
+	/**
+	 * Strings
+	 */
+	this.strings = new Array();
+	var unresolvedStrings = new Array();
 	
 	while (this.constants.length < constant_pool_size-1)
 	{
 		var tag = classReader.getU1(pos++);
 		var constantNum = this.constants.length;
 		
-		Logger.debug("Tag: " + tag + "@" + constantNum);
 		
 		if (tag == 1)
 		{
@@ -59,6 +70,7 @@ var ConstantPoolParser = function(classReader)
 			 * 4 bytes Integer: a signed 32-bit two's complement number in big-endian format
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 4;
 		}
 		else if (tag == 4)
@@ -67,6 +79,7 @@ var ConstantPoolParser = function(classReader)
 			 * 4 bytes Float: a 32-bit single-precision IEEE 754 floating-point number
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 4;
 		}
 		else if (tag == 5)
@@ -75,6 +88,7 @@ var ConstantPoolParser = function(classReader)
 			 * 8 bytes Long: a signed 64-bit two's complement number in big-endian format (takes two slots in the constant pool table)
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 8;
 		}
 		else if (tag == 6)
@@ -83,6 +97,7 @@ var ConstantPoolParser = function(classReader)
 			 * 8 bytes Double: a 64-bit double-precision IEEE 754 floating-point number (takes two slots in the constant pool table)
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 8;
 		}
 		else if (tag == 7)
@@ -91,8 +106,8 @@ var ConstantPoolParser = function(classReader)
 			 * 2 bytes Class reference: an index within the constant pool to a UTF-8 string containing the fully qualified class name (in internal format)
 			 */
 			var ref = classReader.getU2(pos);
-			Logger.debug("Class reference: " + ref);
-			unresolvedclasses.push(constantNum);
+			//Logger.debug("Class reference: " + ref);
+			unresolvedClasses.push(constantNum);
 			this.constants.push(ref);
 			pos += 2;
 		}
@@ -101,7 +116,10 @@ var ConstantPoolParser = function(classReader)
 			/*
 			 * 2 bytes String reference: an index within the constant pool to a UTF-8 string
 			 */
-			this.constants.push(0); //TODO
+			var ref = classReader.getU2(pos);
+			//Logger.debug("String reference: " + ref);
+			unresolvedStrings.push(constantNum);
+			this.constants.push(ref);
 			pos += 2;
 		}
 		else if (tag == 9)
@@ -110,6 +128,7 @@ var ConstantPoolParser = function(classReader)
 			 * 4 bytes Field reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 4;
 		}
 		else if (tag == 10)
@@ -125,7 +144,7 @@ var ConstantPoolParser = function(classReader)
 			entry.classRef = classRef;
 			entry.descriptor = descriptor;
 			
-			unresolvedmethods.push(constantNum);
+			unresolvedMethods.push(constantNum);
 			this.constants.push(entry);
 			pos += 2;
 		}
@@ -135,6 +154,7 @@ var ConstantPoolParser = function(classReader)
 			 * 4 bytes Interface method reference: two indexes within the constant pool, the first pointing to a Class reference, the second to a Name and Type descriptor.
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 4;
 		}
 		else if (tag == 12)
@@ -144,6 +164,7 @@ var ConstantPoolParser = function(classReader)
 			 * and the second a specially encoded type descriptor.
 			 */
 			this.constants.push(0); //TODO
+			Logger.debug("Tag: " + tag + "@" + constantNum);
 			pos += 4;
 		}
 		
@@ -153,9 +174,9 @@ var ConstantPoolParser = function(classReader)
 	/**
 	 * Resolve class references
 	 */
-	for (var i=0; i<unresolvedclasses.length; i++)
+	for (var i=0; i<unresolvedClasses.length; i++)
 	{
-		var constantRef = unresolvedclasses[i];
+		var constantRef = unresolvedClasses[i];
 		var ref = this.constants[constantRef]
 		var resolved = this.constants[ref-1];
 		
@@ -167,9 +188,9 @@ var ConstantPoolParser = function(classReader)
 	/**
 	 * Resolve method references
 	 */
-	for (var i=0; i<unresolvedmethods.length; i++)
+	for (var i=0; i<unresolvedMethods.length; i++)
 	{
-		var constantRef = unresolvedmethods[i];
+		var constantRef = unresolvedMethods[i];
 		var entry = this.constants[constantRef];
 		
 		entry.classRef = this.constants[entry.classRef];
@@ -179,6 +200,21 @@ var ConstantPoolParser = function(classReader)
 		
 		Logger.debug("Resolved method ref: " + constantRef + " = " + entry.classRef + " - " + entry.descriptor);
 	}
+
+	/**
+	 * Resolve string references
+	 */
+	for (var i=0; i<unresolvedStrings.length; i++)
+	{
+		var constantRef = unresolvedStrings[i];
+		var ref = this.constants[constantRef]
+		var resolved = this.constants[ref-1];
+		
+		this.strings[constantRef] = resolved;
+		
+		Logger.debug("Resolved string ref: " + constantRef + " = " + resolved);
+	}
+	
 
 }
 
