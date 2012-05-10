@@ -31,6 +31,8 @@ public class MergeJSFiles
 		for (File f: set)
 		{
 			BufferedReader reader = new BufferedReader( new FileReader(f) );
+
+			printer.println("//Begin of file: " + f.getName());
 			
 			while (reader.ready())
 			{
@@ -38,6 +40,9 @@ public class MergeJSFiles
 				printer.println( line );
 				System.out.println( line );
 			}
+			
+			printer.println("//End of file: " + f.getName());
+
 		}
 		
 		printer.flush();

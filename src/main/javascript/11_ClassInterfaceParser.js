@@ -1,0 +1,10 @@
+/*
+ * @classinterfaceparser
+ */
+
+
+var ClassInterfaceParser = function()
+{
+}
+
+

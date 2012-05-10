@@ -2,15 +2,15 @@
  * @constantpool
  */
 
-var ConstantPoolParser = function(classReader)
+var ConstantPoolParser = function(classReader, offset)
 {
 	/**
 	 * Extract constant pool
 	 */
 	var constant_pool_size = classReader.getU2(8);
-	
-	var pos = 10;
 
+	var pos = offset;
+	
 	/**
 	 * Constants array
 	 */
@@ -106,7 +106,7 @@ var ConstantPoolParser = function(classReader)
 			 * 2 bytes Class reference: an index within the constant pool to a UTF-8 string containing the fully qualified class name (in internal format)
 			 */
 			var ref = classReader.getU2(pos);
-			//Logger.debug("Class reference: " + ref);
+			Logger.debug("Class reference: " + ref);
 			unresolvedClasses.push(constantNum);
 			this.constants.push(ref);
 			pos += 2;
@@ -117,7 +117,7 @@ var ConstantPoolParser = function(classReader)
 			 * 2 bytes String reference: an index within the constant pool to a UTF-8 string
 			 */
 			var ref = classReader.getU2(pos);
-			//Logger.debug("String reference: " + ref);
+			Logger.debug("String reference: " + ref);
 			unresolvedStrings.push(constantNum);
 			this.constants.push(ref);
 			pos += 2;
@@ -172,6 +172,11 @@ var ConstantPoolParser = function(classReader)
 	}
 	
 	/**
+	 * Assign size
+	 */
+	this.size = pos - offset;
+	
+	/**
 	 * Resolve class references
 	 */
 	for (var i=0; i<unresolvedClasses.length; i++)
@@ -180,7 +185,7 @@ var ConstantPoolParser = function(classReader)
 		var ref = this.constants[constantRef]
 		var resolved = this.constants[ref-1];
 		
-		this.classes[constantRef] = resolved;
+		this.classes[constantRef+1] = resolved;
 		
 		Logger.debug("Resolved class ref: " + constantRef + " = " + resolved);
 	}
@@ -196,7 +201,7 @@ var ConstantPoolParser = function(classReader)
 		entry.classRef = this.constants[entry.classRef];
 		entry.descriptor = this.constants[entry.descriptor];
 		
-		this.methods[constantRef] = entry;
+		this.methods[constantRef+1] = entry;
 		
 		Logger.debug("Resolved method ref: " + constantRef + " = " + entry.classRef + " - " + entry.descriptor);
 	}
@@ -210,7 +215,7 @@ var ConstantPoolParser = function(classReader)
 		var ref = this.constants[constantRef]
 		var resolved = this.constants[ref-1];
 		
-		this.strings[constantRef] = resolved;
+		this.strings[constantRef+1] = resolved;
 		
 		Logger.debug("Resolved string ref: " + constantRef + " = " + resolved);
 	}

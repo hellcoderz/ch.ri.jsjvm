@@ -45,7 +45,42 @@ var ClassReader = function(name, bytes)
 	
 	Logger.debug("Classfile version: " + version_major + ":" + version_minor);
 	
-	var cpoolParser = new ConstantPoolParser(this);
+	/**
+	 * Constant pool
+	 */
+	var pos = 10;
+	
+	var cpoolParser = new ConstantPoolParser(this, pos);
+	pos += cpoolParser.size;
+	
+	/**
+	 * Access flag
+	 */
+	
+	var accessFlag = this.getU2(pos);
+	Logger.debug("Access flag: " + accessFlag);
+	
+	pos += 2;
+	
+	
+	/**
+	 * Class reference to this class
+	 */
+	
+	var className = cpoolParser.classes[ this.getU2(pos) ];
+	Logger.debug("Classname: pos("+pos+") " + className);
+	
+	pos += 2
+	
+	/**
+	 * Super Class reference to this class
+	 */
+	
+	var superClassName = cpoolParser.classes[ this.getU2(pos) ];
+	Logger.debug("superClassName: pos("+pos+") " + superClassName);
+	
+	pos += 2
+	
 	
 }
 
