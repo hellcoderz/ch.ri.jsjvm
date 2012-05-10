@@ -15,6 +15,17 @@ var ClassMethodParser = function(constantPool, classReader, offset)
 	
 	Logger.debug("Method count: " + methodCount);
 	
+	for(var i=0; i<methodCount; i++)
+	{
+		
+		var method = classReader.getU2(pos);
+		
+		Logger.debug("Method: " + i + " = " + method);
+		
+		pos += 2;
+		
+	}
+	
 	/**
 	 * Assign size
 	 * TODO
